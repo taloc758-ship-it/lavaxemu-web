@@ -35,10 +35,39 @@ function syncKeys() {
   if (emu && running && !halted) emu.set_keys([...pressed]);
 }
 
+// ---------- 按键反馈（音效 + 震动） ----------
+let audioCtx = null;
+let soundOn = localStorage.getItem('lavax-sound') !== '0';
+
+function clickSound() {
+  if (!soundOn) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(2400, t);
+    osc.frequency.exponentialRampToValueAtTime(700, t + 0.03);
+    gain.gain.setValueAtTime(0.09, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.05);
+  } catch (e) { /* audio unavailable */ }
+}
+
+function buzz(ms) {
+  try { navigator.vibrate && navigator.vibrate(ms); } catch (e) { /* unsupported */ }
+}
+
 function pressKey(code) {
   if (!pressed.has(code)) {
     pressed.add(code);
     syncKeys();
+    clickSound();
+    buzz(10);
   }
 }
 
@@ -208,6 +237,15 @@ document.getElementById('padtoggle').onclick = () => {
   const ep = document.getElementById('extpad');
   ep.classList.toggle('hidden');
   document.getElementById('padtoggle').textContent = ep.classList.contains('hidden') ? '显示扩展键' : '隐藏扩展键';
+};
+
+const sndBtn = document.getElementById('sndtoggle');
+sndBtn.textContent = soundOn ? '音效:开' : '音效:关';
+sndBtn.onclick = () => {
+  soundOn = !soundOn;
+  localStorage.setItem('lavax-sound', soundOn ? '1' : '0');
+  sndBtn.textContent = soundOn ? '音效:开' : '音效:关';
+  if (soundOn) clickSound();
 };
 
 document.getElementById('back').onclick = showList;
