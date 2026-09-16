@@ -245,7 +245,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 async function main() {
-  await init();
+  await init('pkg/lavaxemu_web_bg.wasm?v=7');
   statusEl.textContent = '读取游戏列表…';
   const res = await fetch('games.json');
   if (!res.ok) throw new Error(`games.json: HTTP ${res.status}`);
