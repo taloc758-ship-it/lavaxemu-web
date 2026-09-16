@@ -675,16 +675,26 @@ impl Emulator {
     fn system_checkkey(&mut self) -> Result<HostAction> {
         let key = self.vm.pop_value()? as u8;
         let value = if key < 0x80 {
-            bool_value(self.input.is_pressed(key))
+            // Event-style first: a quick tap must not be lost even if the
+            // guest polls less often than the key was down. Fall back to the
+            // level state so holding keeps reporting.
+            let tapped = self.input.drain_key(key);
+            bool_value(tapped || self.input.is_pressed(key))
         } else {
-            // LVM scans physical key codes in ascending order and reports the
-            // first one that is pressed (mapped back to a LavaX key code).
-            (0..256u16)
-                .find_map(|vk| {
-                    let lava = lava_key_from_vk(vk);
-                    (lava != 0 && self.input.is_pressed(lava)).then_some(i32::from(lava))
-                })
-                .unwrap_or(0)
+            // Any-key query: consume the oldest queued press so taps between
+            // polls survive, then fall back to scanning the held set.
+            if let Some(lava) = self.input.pop_any_key() {
+                i32::from(lava)
+            } else {
+                // LVM scans physical key codes in ascending order and reports the
+                // first one that is pressed (mapped back to a LavaX key code).
+                (0..256u16)
+                    .find_map(|vk| {
+                        let lava = lava_key_from_vk(vk);
+                        (lava != 0 && self.input.is_pressed(lava)).then_some(i32::from(lava))
+                    })
+                    .unwrap_or(0)
+            }
         };
         self.vm.push_value(value)?;
         Ok(HostAction::Continue)

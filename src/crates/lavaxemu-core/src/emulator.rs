@@ -291,6 +291,7 @@ impl Emulator {
 
     fn run_frame_inner(&mut self, budget: usize) -> Result<FrameResult> {
         self.advance_frame_clock();
+        self.input.tick_repeat();
         if !self.vm.is_running() {
             return Ok(self.frame_result(FrameStatus::Halted(self.vm.exit_code()), 0, 0));
         }
