@@ -20,7 +20,6 @@ Object.assign(KEYMAP, {
   ShiftLeft: 26, ShiftRight: 26,
   F1: 0x1c, F2: 0x1d, F3: 0x1e, F4: 0x1f, F5: 25, F6: 18,
 });
-const PREVENT = new Set(Object.keys(KEYMAP).concat(['F10']));
 
 const pressed = new Set();
 let emu = null;
@@ -31,6 +30,21 @@ let running = false;
 let halted = false;
 
 const saveKeyFor = (id) => 'lavax-saves-' + id;
+
+function syncKeys() {
+  if (emu && running && !halted) emu.set_keys([...pressed]);
+}
+
+function pressKey(code) {
+  if (!pressed.has(code)) {
+    pressed.add(code);
+    syncKeys();
+  }
+}
+
+function releaseKey(code) {
+  if (pressed.delete(code)) syncKeys();
+}
 
 function b64ToBytes(b64) {
   const bin = atob(b64);
@@ -66,6 +80,7 @@ function showList() {
   running = false;
   emu = null;
   currentGame = null;
+  pressed.clear();
   screenWrap.classList.add('hidden');
   listEl.classList.remove('hidden');
   helpEl.classList.remove('hidden');
@@ -133,24 +148,50 @@ window.addEventListener('keydown', (e) => {
   const code = KEYMAP[e.code];
   if (code === undefined) return;
   e.preventDefault();
-  if (!pressed.has(code)) {
-    pressed.add(code);
-    if (emu && running && !halted) emu.set_keys([...pressed]);
-  }
+  pressKey(code);
 });
 
 window.addEventListener('keyup', (e) => {
   const code = KEYMAP[e.code];
   if (code === undefined) return;
   e.preventDefault();
-  pressed.delete(code);
-  if (emu && running && !halted) emu.set_keys([...pressed]);
+  releaseKey(code);
 });
 
 window.addEventListener('blur', () => {
   pressed.clear();
-  if (emu && running && !halted) emu.set_keys([]);
+  syncKeys();
 });
+
+// ---------- 虚拟手柄（多点触控） ----------
+function bindPad() {
+  document.querySelectorAll('#gamepad [data-code], #extpad [data-code]').forEach((el) => {
+    const code = parseInt(el.dataset.code, 10);
+    const down = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      el.setPointerCapture && el.setPointerCapture(e.pointerId);
+      el.classList.add('active');
+      pressKey(code);
+    };
+    const up = () => {
+      el.classList.remove('active');
+      releaseKey(code);
+    };
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+    el.addEventListener('lostpointercapture', up);
+    el.addEventListener('contextmenu', (e) => e.preventDefault());
+  });
+}
+bindPad();
+
+document.getElementById('padtoggle').onclick = () => {
+  const ep = document.getElementById('extpad');
+  ep.classList.toggle('hidden');
+  document.getElementById('padtoggle').textContent = ep.classList.contains('hidden') ? '显示扩展键' : '隐藏扩展键';
+};
 
 document.getElementById('back').onclick = showList;
 document.getElementById('reset').onclick = () => {
@@ -185,7 +226,7 @@ async function main() {
   listEl.innerHTML = '';
   for (const game of manifest.games) {
     const btn = document.createElement('button');
-    btn.innerHTML = `${game.title}<span class="badge">${game.booted ? '启动测试通过' : '未测试'}${(game.files || []).length ? ' · 有资源包' : ''}</span>`;
+    btn.innerHTML = `${game.title}<span class="badge">${game.booted ? '启动测试通过' : '兼容性待验证'}${(game.files || []).length ? ' · 有资源包' : ''}</span>`;
     btn.onclick = () => launch(game);
     listEl.appendChild(btn);
   }
