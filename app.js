@@ -23,6 +23,7 @@ Object.assign(KEYMAP, {
 
 const pressed = new Set();
 let padKeys = new Set();     // 手柄映射出的键
+let wakeLock = null;         // 游戏运行时保持屏幕常亮（手柄/键盘玩法）
 let emu = null;
 let buf = null;
 let imageData = null;
@@ -74,6 +75,19 @@ function pollGamepad() {
 
 window.addEventListener('gamepadconnected', (e) => {
   if (running) statusEl.textContent = `手柄已连接: ${e.gamepad.id.slice(0, 40)}`;
+});
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+  } catch (e) { /* denied or unsupported */ }
+}
+function releaseWakeLock() {
+  try { wakeLock && wakeLock.release(); } catch (e) { /* already released */ }
+  wakeLock = null;
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && running && !wakeLock) requestWakeLock();
 });
 
 // ---------- 按键反馈（音效 + 震动） ----------
@@ -148,6 +162,7 @@ async function loadFile(url) {
 function showList() {
   persist();
   running = false;
+  releaseWakeLock();
   emu = null;
   currentGame = null;
   pressed.clear();
@@ -183,6 +198,7 @@ async function launch(game) {
     running = true;
     lastTs = 0;
     frameAcc = 0;
+    requestWakeLock();
     statusEl.textContent = `${game.title} — 运行中` + (Object.keys(store).length ? '（已恢复存档）' : '');
     requestAnimationFrame(tick);
   } catch (e) {
