@@ -5,7 +5,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 
 const VM_SLICE_INSTRUCTIONS: usize = 1_001;
-const DEFAULT_FRAME_BUDGET: usize = 100_000;
+const DEFAULT_FRAME_BUDGET: usize = 30_000;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FrameStatus {

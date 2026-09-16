@@ -43,7 +43,11 @@ impl Emulator {
             8 => self.system_write_block(),
             9 => {
                 self.display.present();
-                Ok(HostAction::Continue)
+                // On real hardware an LCD update takes tens of milliseconds and
+                // is what paces "draw + present" game loops. Emulating it as
+                // instant makes such games run orders of magnitude too fast.
+                self.delay_remaining_ticks += 8; // ~30 ms at 256 ticks/s
+                Ok(HostAction::Delay)
             }
             10 => self.system_textout(),
             11 => self.system_rectangle(true),

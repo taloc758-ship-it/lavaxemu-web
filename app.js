@@ -124,13 +124,15 @@ async function launch(game) {
 const FRAME_MS = 1000 / 60;   // LavaX games are tuned for 60 game-frames/second
 let frameAcc = 0;
 let lastTs = 0;
+let speed = parseFloat(localStorage.getItem('lavax-speed') || '1');
+if (!isFinite(speed) || speed <= 0) speed = 1;
 
 function tick(ts) {
   if (!running) return;
   if (!lastTs) lastTs = ts;
-  frameAcc += ts - lastTs;
+  frameAcc += (ts - lastTs) * speed;
   lastTs = ts;
-  if (frameAcc > 200) frameAcc = 200;   // clamp catch-up after tab switch
+  if (frameAcc > 500) frameAcc = 500;   // clamp catch-up after tab switch
   try {
     let haltedNow = false;
     while (frameAcc >= FRAME_MS) {
@@ -209,6 +211,15 @@ document.getElementById('padtoggle').onclick = () => {
 };
 
 document.getElementById('back').onclick = showList;
+const speedSel = document.getElementById('speed');
+speedSel.value = String(speed);
+speedSel.onchange = () => {
+  speed = parseFloat(speedSel.value) || 1;
+  localStorage.setItem('lavax-speed', String(speed));
+  frameAcc = 0;
+  lastTs = 0;
+  statusEl.textContent = `速度已切换为 ${speed}×`;
+};
 document.getElementById('reset').onclick = () => {
   if (!emu) return;
   emu.reset();
