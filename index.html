@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文曲星游戏馆 - LavaX Web (WASM)</title>
+<style>
+  body { background:#1b1b1f; color:#ddd; font-family:system-ui,"Microsoft YaHei"; display:flex; flex-direction:column; align-items:center; margin:0; padding:20px 12px; }
+  h2 { margin:0 0 10px; font-weight:600; }
+  h2 small { font-size:12px; color:#888; font-weight:400; }
+  canvas { image-rendering: pixelated; width:640px; max-width:96vw; background:#000; border:1px solid #444; border-radius:4px; }
+  .bar { margin:12px 0 6px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center; }
+  button { background:#2d2d34; color:#ddd; border:1px solid #555; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:13px; }
+  button:hover { background:#3a3a44; }
+  #status { color:#9c9; font-size:14px; min-height:20px; text-align:center; }
+  #gamelist { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; max-width:720px; width:96vw; margin:14px 0; }
+  #gamelist button { padding:12px 8px; font-size:15px; background:#26262d; }
+  #gamelist button .badge { display:block; font-size:11px; color:#777; margin-top:4px; }
+  .keys { font-size:12px; color:#888; max-width:660px; text-align:center; line-height:1.8; }
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+<h2>文曲星游戏馆 <small>LavaX Web · WASM（含定时器 / 机型签名等修复）</small></h2>
+
+<div id="screenwrap" class="hidden">
+  <canvas id="screen" width="160" height="80"></canvas>
+  <div class="bar">
+    <button id="back">← 游戏列表</button>
+    <button id="reset">复位 (F10)</button>
+    <button id="clearsave">清除本游戏存档</button>
+  </div>
+</div>
+
+<div id="status"></div>
+<div id="gamelist"></div>
+
+<div class="keys" id="help">
+  方向键 移动 · Enter 确认 · Esc / 退格 返回 · 空格 = B · 数字键 1-9 = B/N/M/G/H/J/T/Y/U · F1-F4 功能键<br>
+  每个游戏的存档独立保存在浏览器 localStorage（每 3 秒 + 关页时写入）
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

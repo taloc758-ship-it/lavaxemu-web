@@ -1,0 +1,207 @@
+{
+ "games": [
+  {
+   "id": "magic-era",
+   "booted": true,
+   "title": "魔法纪元",
+   "files": [
+    {
+     "path": "/LavaData/RPGSource.dat",
+     "url": "games/magic-era/LavaData/RPGSource.dat"
+    }
+   ],
+   "lav": "games/magic-era/魔法纪元.lav",
+   "note": "启动OK 22915879"
+  },
+  {
+   "id": "hero",
+   "booted": true,
+   "title": "新英雄坛说",
+   "files": [
+    {
+     "path": "/LavaData/Hero.dat",
+     "url": "games/hero/LavaData/Hero.dat"
+    },
+    {
+     "path": "/LavaData/HeroSkin.dat",
+     "url": "games/hero/LavaData/HeroSkin.dat"
+    }
+   ],
+   "lav": "games/hero/Lava/Hero.lav",
+   "note": "启动OK a73ea609"
+  },
+  {
+   "id": "emstory",
+   "booted": true,
+   "title": "易码事件簿",
+   "files": [
+    {
+     "path": "/LavaData/EMStory.dat",
+     "url": "games/emstory/LavaData/EMStory.dat"
+    }
+   ],
+   "lav": "games/emstory/Lava/EMStory.lav",
+   "note": "启动OK 29c8c8ac"
+  },
+  {
+   "id": "xianjian",
+   "booted": true,
+   "title": "仙剑后传",
+   "files": [
+    {
+     "path": "/LavaData/PalaData.dat",
+     "url": "games/xianjian/LavaData/PalaData.dat"
+    }
+   ],
+   "lav": "games/xianjian/Lava/Pala_TC800.lav",
+   "note": "启动OK 8907b470"
+  },
+  {
+   "id": "sanguo",
+   "booted": true,
+   "title": "三国志",
+   "files": [
+    {
+     "path": "/LavaData/sgz.dat",
+     "url": "games/sanguo/LavaData/sgz.dat"
+    },
+    {
+     "path": "/LavaData/sgz.sav",
+     "url": "games/sanguo/LavaData/sgz.sav"
+    }
+   ],
+   "lav": "games/sanguo/Lava/三国志.lav",
+   "note": "启动OK 95eb347f"
+  },
+  {
+   "id": "yongzhe",
+   "booted": true,
+   "title": "勇者传说",
+   "files": [],
+   "lav": "games/yongzhe/Lava/勇者传说.lav",
+   "note": "启动OK 4e06e6b4"
+  },
+  {
+   "id": "maodao",
+   "booted": true,
+   "title": "冒险岛IV",
+   "files": [
+    {
+     "path": "/LavaData/MXDMap.dat",
+     "url": "games/maodao/LavaData/MXDMap.dat"
+    },
+    {
+     "path": "/LavaData/MXDpics.dat",
+     "url": "games/maodao/LavaData/MXDpics.dat"
+    }
+   ],
+   "lav": "games/maodao/Lava/冒险岛IV.lav",
+   "note": "启动OK e76b1746"
+  },
+  {
+   "id": "pokemon",
+   "booted": true,
+   "title": "口袋·灰度版",
+   "files": [
+    {
+     "path": "/LavaData/dialog.dat",
+     "url": "games/pokemon/LavaData/dialog.dat"
+    },
+    {
+     "path": "/LavaData/map1.dat",
+     "url": "games/pokemon/LavaData/map1.dat"
+    },
+    {
+     "path": "/LavaData/npc.dat",
+     "url": "games/pokemon/LavaData/npc.dat"
+    },
+    {
+     "path": "/LavaData/pokemon.dat",
+     "url": "games/pokemon/LavaData/pokemon.dat"
+    }
+   ],
+   "lav": "games/pokemon/Lava/pokemon.lav",
+   "note": "启动OK ed381dd7"
+  },
+  {
+   "id": "warcraft",
+   "booted": true,
+   "title": "WarCraft",
+   "files": [
+    {
+     "path": "/LavaData/CraftBmp.DAT",
+     "url": "games/warcraft/LavaData/CraftBmp.DAT"
+    }
+   ],
+   "lav": "games/warcraft/Lava/WarCraft.lav",
+   "note": "启动OK bf0ea8a4"
+  },
+  {
+   "id": "cs",
+   "booted": true,
+   "title": "CS蓝色行动",
+   "files": [
+    {
+     "path": "/LavaData/csimg.dat",
+     "url": "games/cs/LavaData/csimg.dat"
+    },
+    {
+     "path": "/LavaData/cspics.dat",
+     "url": "games/cs/LavaData/cspics.dat"
+    }
+   ],
+   "lav": "games/cs/Lava/CS蓝色行动.lav",
+   "note": "启动OK e6ae6dae"
+  },
+  {
+   "id": "tanke",
+   "booted": true,
+   "title": "坦克2004",
+   "files": [
+    {
+     "path": "/LavaData/TankMap.dat",
+     "url": "games/tanke/LavaData/TankMap.dat"
+    }
+   ],
+   "lav": "games/tanke/Lava/坦克2004.lav",
+   "note": "启动OK 0425622d"
+  },
+  {
+   "id": "tetris",
+   "booted": true,
+   "title": "俄罗斯方块·灰",
+   "files": [],
+   "lav": "games/tetris/Lava/俄罗斯方块灰.lav",
+   "note": "启动OK e272a777"
+  },
+  {
+   "id": "wuzi",
+   "booted": true,
+   "title": "五子连珠",
+   "files": [
+    {
+     "path": "/LavaData/midi1.mid",
+     "url": "games/wuzi/LavaData/midi1.mid"
+    },
+    {
+     "path": "/LavaData/midi2.mid",
+     "url": "games/wuzi/LavaData/midi2.mid"
+    },
+    {
+     "path": "/LavaData/wb2gb.dic",
+     "url": "games/wuzi/LavaData/wb2gb.dic"
+    },
+    {
+     "path": "/LavaData/wzqpicc_2.dat",
+     "url": "games/wuzi/LavaData/wzqpicc_2.dat"
+    },
+    {
+     "path": "/LavaData/wzqstup.dat",
+     "url": "games/wuzi/LavaData/wzqstup.dat"
+    }
+   ],
+   "lav": "games/wuzi/Lava/五子连珠.lav",
+   "note": "启动OK 8a73bb00"
+  }
+ ]
+}
