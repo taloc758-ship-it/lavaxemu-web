@@ -111,6 +111,8 @@ async function launch(game) {
     buf = new Uint8Array(emu.width() * emu.height() * 4);
     imageData = ctx.createImageData(emu.width(), emu.height());
     running = true;
+    lastTs = 0;
+    frameAcc = 0;
     statusEl.textContent = `${game.title} — 运行中` + (Object.keys(store).length ? '（已恢复存档）' : '');
     requestAnimationFrame(tick);
   } catch (e) {
@@ -119,10 +121,23 @@ async function launch(game) {
   }
 }
 
-function tick() {
+const FRAME_MS = 1000 / 60;   // LavaX games are tuned for 60 game-frames/second
+let frameAcc = 0;
+let lastTs = 0;
+
+function tick(ts) {
   if (!running) return;
+  if (!lastTs) lastTs = ts;
+  frameAcc += ts - lastTs;
+  lastTs = ts;
+  if (frameAcc > 200) frameAcc = 200;   // clamp catch-up after tab switch
   try {
-    if (emu.frame(buf)) {
+    let haltedNow = false;
+    while (frameAcc >= FRAME_MS) {
+      frameAcc -= FRAME_MS;
+      if (emu.frame(buf)) { haltedNow = true; break; }
+    }
+    if (haltedNow) {
       halted = true;
       persist();
       statusEl.textContent = `${currentGame.title} — 游戏已退出，点"复位"重开或返回列表`;
@@ -200,6 +215,8 @@ document.getElementById('reset').onclick = () => {
   if (!running && currentGame) {
     running = true;
     halted = false;
+    lastTs = 0;
+    frameAcc = 0;
     statusEl.textContent = `${currentGame.title} — 运行中`;
     requestAnimationFrame(tick);
   }
