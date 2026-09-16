@@ -22,6 +22,7 @@ Object.assign(KEYMAP, {
 });
 
 const pressed = new Set();
+let padKeys = new Set();     // 手柄映射出的键
 let emu = null;
 let buf = null;
 let imageData = null;
@@ -32,8 +33,48 @@ let halted = false;
 const saveKeyFor = (id) => 'lavax-saves-' + id;
 
 function syncKeys() {
-  if (emu && running && !halted) emu.set_keys([...pressed]);
+  if (emu && running && !halted) emu.set_keys([...pressed, ...padKeys]);
 }
+
+// ---------- 手柄（Gamepad API） ----------
+const PADMAP = {
+  0: 13,   // A  → 确定
+  1: 27,   // B  → 返回
+  2: 122,  // X  → Z（开火）
+  3: 98,   // Y  → B键
+  4: 19,   // LB → 翻页↑
+  5: 14,   // RB → 翻页↓
+  8: 27,   // Select → 返回
+  9: 13,   // Start  → 确定
+  12: 20, 13: 21, 14: 22, 15: 23, // 十字键
+};
+
+function pollGamepad() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const next = new Set();
+  for (const gp of pads) {
+    if (!gp || !gp.connected) continue;
+    for (const [btn, code] of Object.entries(PADMAP)) {
+      const b = gp.buttons[btn];
+      if (b && b.pressed) next.add(code);
+    }
+    const ax = gp.axes[0] || 0;
+    const ay = gp.axes[1] || 0;
+    if (ax < -0.4) next.add(23);
+    if (ax > 0.4) next.add(22);
+    if (ay < -0.4) next.add(20);
+    if (ay > 0.4) next.add(21);
+  }
+  const changed = next.size !== padKeys.size || [...next].some((k) => !padKeys.has(k));
+  if (changed) {
+    padKeys = next;
+    syncKeys();
+  }
+}
+
+window.addEventListener('gamepadconnected', (e) => {
+  if (running) statusEl.textContent = `手柄已连接: ${e.gamepad.id.slice(0, 40)}`;
+});
 
 // ---------- 按键反馈（音效 + 震动） ----------
 let audioCtx = null;
@@ -158,6 +199,7 @@ if (!isFinite(speed) || speed <= 0) speed = 1;
 
 function tick(ts) {
   if (!running) return;
+  pollGamepad();
   if (!lastTs) lastTs = ts;
   frameAcc += (ts - lastTs) * speed;
   lastTs = ts;
