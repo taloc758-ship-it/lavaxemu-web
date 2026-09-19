@@ -59,7 +59,13 @@ function pollGamepad() {
     if (!gp || !gp.connected) continue;
     for (const [btn, code] of Object.entries(PADMAP)) {
       const b = gp.buttons[btn];
-      if (b && b.pressed) next.add(code);
+      if (b && b.pressed) {
+        // 部分手柄十字键左右编号互换，开关打开时纠正
+        let c = code;
+        if (dpadSwap && c === 22) c = 23;
+        else if (dpadSwap && c === 23) c = 22;
+        next.add(c);
+      }
     }
     const ax = gp.axes[0] || 0;
     const ay = gp.axes[1] || 0;
@@ -306,6 +312,17 @@ sndBtn.onclick = () => {
   localStorage.setItem('lavax-sound', soundOn ? '1' : '0');
   sndBtn.textContent = soundOn ? '音效:开' : '音效:关';
   if (soundOn) clickSound();
+};
+
+let dpadSwap = localStorage.getItem('lavax-dpadswap') === '1';
+const swapBtn = document.getElementById('dpadswap');
+swapBtn.textContent = dpadSwap ? '十字左右:互换' : '十字左右:正常';
+swapBtn.onclick = () => {
+  dpadSwap = !dpadSwap;
+  localStorage.setItem('lavax-dpadswap', dpadSwap ? '1' : '0');
+  swapBtn.textContent = dpadSwap ? '十字左右:互换' : '十字左右:正常';
+  padKeys.clear();
+  syncKeys();
 };
 
 document.getElementById('back').onclick = showList;
